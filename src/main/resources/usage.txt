@@ -1,0 +1,19 @@
+
+    usage: cron-expr-parser <minute> <hour> <day-of-month> <month> <day-of-week> <command>
+
+    List of special characters supported by <minute>, <hour>, <day-of-month>, <month>, <day-of-week> fields:
+
+        * (all)         –   used to specify that the command should be executed for every time unit
+                            example: "*" in the <minute> field – means "for every minute"
+
+        – (range)       –   used to determine the value range
+                            example: "10-11" in <hour> field means "10th and 11th hours"
+
+        , (values)      –   used to specify multiple values
+                            example: "MON, WED, FRI" in <day-of-week> field means on the days "Monday, Wednesday, and Friday"
+
+        / (increments)  –   used to specify the incremental values
+                            example: a "5/15" in the <minute> field means at "5, 20, 35 and 50 minutes of an hour"
+
+    Example:
+        $ java -jar target/cron-expr-parser-0.9-jar-with-dependencies.jar */15 0 1,15 * 1-5 /bin/ls -a

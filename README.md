@@ -33,5 +33,5 @@ https://git-scm.com/book/en/v2/Getting-Started-Installing-Git to install and con
         
 - Locate the generated `far jar` and execute the application with the right command line arguments.
 
-        $ java -jar ./target/cron-expr-parser-0.9-jar-with-dependencies.jar */15 0 1,15 * 1-5 /usr/bin/find . -name "*.jar"
+        $ java -jar ./target/cron-expr-parser-0.9-jar-with-dependencies.jar */15 0 1,15 * 1-5 /bin/ls -a
 
