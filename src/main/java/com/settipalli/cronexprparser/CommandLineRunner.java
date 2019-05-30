@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class CommandLineRunner {
     private final static String NEWLINE = System.getProperty("line.separator");
@@ -24,14 +25,17 @@ public class CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        log.info("Application Started.");
+        log.info("Application Started. Command line arguments: " + Arrays.toString(args));
         PatternMatcher patternMatcher = new PatternMatcher();
-        log.debug("Pattern Matcher initialized.");
+        log.debug("Pattern matcher initialized.");
         Application application = new Application(args, patternMatcher);
+        log.debug("Application initialized.");
         try {
             String result = application.process();
+            log.info("Result: " + result);
             System.out.println(result);
         } catch (Exception ex) {
+            log.error(ex.getMessage());
             StringBuilder sb = new StringBuilder(2048);
             sb.append(NEWLINE)
                     .append("Error: ")
@@ -40,5 +44,6 @@ public class CommandLineRunner {
                     .append(NEWLINE);
             System.out.println(sb.toString());
         }
+        log.info("Application shutdown complete.");
     }
 }

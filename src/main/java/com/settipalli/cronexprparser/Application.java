@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,9 +40,11 @@ public class Application {
         fieldNameToIndexMaxAndStartValueMapper.put("day of month", Triple.of(2, 31, 1));
         fieldNameToIndexMaxAndStartValueMapper.put("month", Triple.of(3, 12, 1));
         fieldNameToIndexMaxAndStartValueMapper.put("day of week", Triple.of(4, 7, 1));
+        log.debug("fieldNameToIndexMaxAndStartValueMapper initialized");
     }
 
-    public String generateValuesForExpressionTypeAndMatcher(ExpressionType exprType, Matcher matcher, int maxValue, int startValue) {
+    public String generateValuesForExpressionTypeAndMatcher(ExpressionType exprType, Matcher matcher, int maxValue,
+                                                            int startValue) {
         if (matcher == null || exprType == null || maxValue < 0) return "";
         StringBuilder sb = new StringBuilder(128);
         int start, stop;
@@ -112,7 +115,7 @@ public class Application {
                     throw new InvalidIncrementsNumeratorValueException("Invalid Numerator value.");
 
                 if (denominator > stop)
-                    System.out.println("WARN: Denominator value exceeds the threshold. Would be rounded off.");
+                    log.warn("WARN: Denominator value exceeds the threshold. Would be rounded off.");
 
                 sb.append(start);
                 while ((start + denominator) < stop) {
@@ -135,7 +138,12 @@ public class Application {
         String result = generateValuesForExpressionTypeAndMatcher(exprTypeAndMatcher.getLeft(),
                 exprTypeAndMatcher.getRight(), maxValueForField, startValueForField);
 
+        log.debug(String.format("generateValuesForExpressionTypeAndMatcher(%s, %s, %d, %d) = %s",
+                exprTypeAndMatcher.getLeft(), exprTypeAndMatcher.getRight(), maxValueForField, startValueForField,
+                result));
+
         if (result == null || result.length() == 0) {
+            log.debug("parseField: result is either null or empty.");
             throw new InvalidFieldExpressionException(String.format("Invalid %s expression", fieldType));
         }
 
@@ -153,6 +161,9 @@ public class Application {
             String parseResult = parseField(cmdArgs[indexAndMaxAndStartValue.getLeft()],
                     field, indexAndMaxAndStartValue.getMiddle(), indexAndMaxAndStartValue.getRight());
 
+            log.debug(String.format("parseField(%s, %s, %d, %d) = %s", cmdArgs[indexAndMaxAndStartValue.getLeft()],
+                    field, indexAndMaxAndStartValue.getMiddle(), indexAndMaxAndStartValue.getRight(), parseResult));
+
             result.put(field, parseResult);
         }
 
@@ -169,10 +180,14 @@ public class Application {
     public String process() {
         // validate command line arguments
         if (cmdArgs == null || cmdArgs.length < ARGCOUNT) {
+            log.debug(String.format("cmdArgs (%s) is either empty or the #args are less than ARGCOUNT."),
+                    Arrays.toString(cmdArgs));
             throw new InvalidCronExpressionException("Invalid CRON expression.");
         }
 
         Map<String, String> result = parse();
+        log.debug(String.format("parse: %s", result));
+
         String[] fieldOrder = {"minute", "hour", "day of month", "month", "day of week", "cmd"};
         StringBuilder sb = new StringBuilder(2048);
         for (String field : fieldOrder) {
