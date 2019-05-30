@@ -4,15 +4,13 @@ import com.settipalli.cronexprparser.exceptions.InvalidCronExpressionException;
 import com.settipalli.cronexprparser.exceptions.InvalidFieldExpressionException;
 import com.settipalli.cronexprparser.exceptions.InvalidIncrementsNumeratorValueException;
 import com.settipalli.cronexprparser.exceptions.UnknownFieldWhileAssemblingFinalResultException;
-import com.settipalli.cronexprparser.exceptions.UnsupportedNumeratorExpressionType;
+import com.settipalli.cronexprparser.exceptions.UnsupportedNumeratorExpressionTypeException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 
 public class Application {
@@ -48,6 +46,7 @@ public class Application {
         if (matcher == null || exprType == null || maxValue < 0) return "";
         StringBuilder sb = new StringBuilder(128);
         int start, stop;
+        List<Integer> values;
 
         matcher.find();
         switch (exprType) {
@@ -77,9 +76,14 @@ public class Application {
                 }
                 break;
             case VALUES:
-                for (String min : matcher.group(0).split(",")) {
-                    sb.append(min).append(" ");
+                values = new ArrayList<>();
+                for (String value : matcher.group(0).split(",")) {
+//                    sb.append(min).append(" ");
+                    values.add(Integer.parseInt(value));
                 }
+                Collections.sort(values);
+                values.stream().forEach(v -> sb.append(v).append(" "));
+                values = null; // prevent loitering
                 break;
             case INCREMENTS:
                 String numerator = matcher.group(1);
@@ -91,6 +95,7 @@ public class Application {
                 Matcher numeratorMatcher = numeratorExpressionMatcher.getRight();
                 start = 0;
                 stop = maxValue - 1;
+                numeratorMatcher.find();
                 switch (numeratorExpressionType) {
                     case NUMBER:
                         start = Integer.parseInt(numeratorMatcher.group(1));
@@ -107,8 +112,10 @@ public class Application {
                             break;
                         }
                         break;
+                    case VALUES:
+                        throw new UnsupportedNumeratorExpressionTypeException("Value based numerator is not supported");
                     default:
-                        throw new UnsupportedNumeratorExpressionType("Unsupported Numerator expression type");
+                        throw new UnsupportedNumeratorExpressionTypeException("Unsupported Numerator expression type");
                 }
 
                 if (start >= maxValue || start > stop)
