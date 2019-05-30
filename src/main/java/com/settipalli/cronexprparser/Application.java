@@ -7,11 +7,9 @@ import com.settipalli.cronexprparser.exceptions.UnknownFieldWhileAssemblingFinal
 import com.settipalli.cronexprparser.exceptions.UnsupportedNumeratorExpressionType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,6 +17,8 @@ import java.util.regex.Matcher;
 public class Application {
     private final String NEWLINE = System.getProperty("line.separator");
     private final int ARGCOUNT = 6;
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     private final String[] cmdArgs;
     private final PatternMatcher patternMatcher;
@@ -53,7 +53,8 @@ public class Application {
                 break;
             case ALL:
                 start = startValue;
-                if (start == 0) maxValue--; // If not, it will include '60' in case of minutes, and '24' in case or hours
+                if (start == 0)
+                    maxValue--; // If not, it will include '60' in case of minutes, and '24' in case or hours
                 sb.append(start);
                 while (++start <= maxValue) {
                     sb.append(" ").append(start);

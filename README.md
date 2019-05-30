@@ -17,15 +17,15 @@ to install the right version for your platform.
 - If Git isn't installed on your machine, follow the steps listed at
 https://git-scm.com/book/en/v2/Getting-Started-Installing-Git to install and configure Git.
 
-- Clone the repository `git@github.com:settipalli/corn-expr-parser.git corn-expr-parser`.
+- Clone the repository `git@github.com:settipalli/cron-expr-parser.git cron-expr-parser`.
     
-        $ git clone git@github.com:settipalli/corn-expr-parser.git
+        $ git clone git@github.com:settipalli/cron-expr-parser.git
         
     > To learn more about cloning a repository, read https://help.github.com/en/articles/cloning-a-repository.
 
 - Navigate to the folder where the repository contents are cloned.
 
-        $ cd corn-expr-parser
+        $ cd cron-expr-parser
         
 - Build the `fat jar` of the application.
 
@@ -36,6 +36,36 @@ https://git-scm.com/book/en/v2/Getting-Started-Installing-Git to install and con
         $ java -jar ./target/cron-expr-parser-0.9-jar-with-dependencies.jar \*/15 0 1,15 \* 1-5 /bin/ls -a
 
     > Remember to escape any special characters such as '*' in the command line arguments.
+
+
+# Logs
+
+You will find the logs in the `./logs` folder.
+
+Since this is a command line application, the logs are not written to the standard output instead, they are stored in a
+file within the `./logs` folder.
+
+To change the log level, edit the value of the `level` attribute in the `Loggers` section within
+`./src/main/resources/log4j2.xml`.  
+
+For instance, the code snippet to change the log level from `info` to `debug` would look like:
+
+        <Loggers>
+            <Logger name="com.settipalli" level="debug" />
+            <Root level="info">
+                <AppenderRef ref="ROLLING" />
+            </Root>
+        </Loggers>
+
+In addition to file based logging, the code snippet to enable logging on console would look like:
+
+        <Loggers>
+            <Logger name="com.settipalli" level="debug" />
+            <Root level="info">
+                <AppenderRef ref="STDOUT" />
+                <AppenderRef ref="ROLLING" />
+            </Root>
+        </Loggers> 
 
 # Usage
 
